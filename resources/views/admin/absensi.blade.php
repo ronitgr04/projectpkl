@@ -90,7 +90,7 @@
         <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase">No</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase">Nomor</th>
                     <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase">Nama</th>
                     <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase">Universitas</th>
                     <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase">Status</th>

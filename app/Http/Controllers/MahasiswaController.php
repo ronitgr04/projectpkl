@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class MahasiswaController extends Controller
 {
@@ -21,6 +22,21 @@ class MahasiswaController extends Controller
         $mahasiswa = Mahasiswa::with('user')->paginate(10);
         return view('admin.mahasiswa', compact('mahasiswa'));
     }
+    public function profilSaya()
+{
+    // Ambil user yang sedang login
+    $user = Auth::user();
+
+    // Cari data mahasiswa yang terhubung dengan user tersebut
+
+    $mahasiswa = Mahasiswa::where('user_id', $user->id_user)->first();
+
+    if (!$mahasiswa) {
+        return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan.');
+    }
+
+    return view('mahasiswa.profil', compact('mahasiswa'));
+}
 
     /**
      * Show the form for creating a new resource.

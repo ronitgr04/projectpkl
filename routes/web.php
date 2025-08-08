@@ -152,11 +152,16 @@ Route::middleware('auth.custom')->group(function () {
             Route::get('/riwayatabsensi', function () {
                 return view('mahasiswa.riwayatabsensi');
             })->name('mahasiswa.riwayatabsensi');
+
+            // Profil
             Route::get('/profil', function () {
                 return view('mahasiswa.profil');
             })->name('mahasiswa.profil');
-        });
-    });
+            Route::middleware(['auth'])->group(function () {
+            Route::get('/profil', [MahasiswaController::class, 'profilSaya'])->name('profil.mahasiswa');
+            });
+            });
+            });
 
     // Routes accessible by both Admin and User
     Route::middleware('auth.custom:Admin,User')->group(function () {

@@ -25,6 +25,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-2xl font-semibold mb-2">Selamat Datang, {{ auth()->user()->username }}.</h2>
             <p class="text-gray-600">
+            
                 Selamat Datang di Aplikasi Absensi dan Kegiatan Harian Mahasiswa berbasis Web.
                 Sebuah sistem yang memungkinkan para Mahasiswa PKL di Badan Kominfo Kabupaten Sidikalang
                 melakukan absensi dan mencatat kegiatan harian dari website. Sistem ini diharapkan dapat memberi
