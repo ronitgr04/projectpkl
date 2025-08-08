@@ -3,9 +3,28 @@
         <h1 class="text-lg font-bold text-blue-600">ABSENSI | KEGIATAN</h1>
     </div>
     <div class="p-4 border-b flex items-center gap-3">
+        @if(Auth::user()->mahasiswa && Auth::user()->mahasiswa->foto)
+            <!-- Jika mahasiswa memiliki foto -->
+            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200">
+                <img src="{{ Auth::user()->mahasiswa->foto_url }}"
+                     alt="Foto {{ Auth::user()->mahasiswa->nama }}"
+                     class="w-full h-full object-cover">
+            </div>
+        @elseif(Auth::user()->mahasiswa)
+            <!-- Jika mahasiswa tapi belum ada foto -->
+            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                {{ strtoupper(substr(Auth::user()->mahasiswa->nama, 0, 2)) }}
+            </div>
+        @else
+            <!-- Default untuk admin atau user tanpa data mahasiswa -->
+            <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
+                <span class="material-icons">person</span>
+            </div>
+        @endif
+    {{-- <div class="p-4 border-b flex items-center gap-3">
         <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-white text-xl">
             <span class="material-icons">person</span>
-        </div>
+        </div> --}}
         <div>
             <p class="font-semibold">{{ Auth::user()->username ?? 'Roni Tumangger' }}</p>
             <p class="text-sm text-gray-500">{{ ucfirst(Auth::user()->level ?? 'Administrator') }}</p>

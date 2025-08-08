@@ -1,14 +1,28 @@
 <?php
 
+// use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\AuthController;
+// use App\Http\Controllers\MahasiswaController;
+// use App\Http\Controllers\KegiatanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\AdminProfileController;
+use App\Http\Controllers\MahasiswaAbsensiController;
+use App\Http\Controllers\MahasiswaKegiatanController;
+use App\Http\Controllers\ProfilMahasiswaController; // TAMBAHAN BARU
+use App\Http\Controllers\InstansiController;
+use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\KegiatanMahasiswaController;
 
 
 // Redirect root to login
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+
 
 // Authentication Routes (Guest only)
 Route::middleware('guest')->group(function () {
@@ -63,9 +77,22 @@ Route::middleware('auth.custom')->group(function () {
                 return view('admin.absensi');
             })->name('admin.absensi');
 
-            Route::get('/kegiatan', function () {
-                return view('admin.kegiatan');
-            })->name('admin.kegiatan');
+              Route::get('kegiatan/export', [KegiatanController::class, 'export'])
+                ->name('admin.kegiatan.export');
+
+            // Resource routes untuk kegiatan dengan nama yang unik untuk admin
+            Route::resource('kegiatan', KegiatanController::class)->names([
+                'index' => 'admin.kegiatan.index',
+                'create' => 'admin.kegiatan.create',
+                'store' => 'admin.kegiatan.store',
+                'show' => 'admin.kegiatan.show',
+                'edit' => 'admin.kegiatan.edit',
+                'update' => 'admin.kegiatan.update',
+                'destroy' => 'admin.kegiatan.destroy',
+            ]);
+            // Route::get('/kegiatan', function () {
+            //     return view('admin.kegiatan');
+            // })->name('admin.kegiatan');
             // Route::get('/kegiatan', function () {
             // $kegiatan = Kegiatan::with('user')->where('user_id', auth()->id())->paginate(10);
             // return view('dashboard.kegiatan', compact('kegiatan'));
@@ -82,6 +109,8 @@ Route::middleware('auth.custom')->group(function () {
         });
     });
 
+
+                                 ////////  MAHASISWA /////////
     // User/Mahasiswa level routes
     Route::middleware('auth.custom:User')->group(function () {
         // Mahasiswa Dashboard
@@ -97,9 +126,28 @@ Route::middleware('auth.custom')->group(function () {
                 return view('mahasiswa.absensi');
             })->name('mahasiswa.absensi');
 
-            Route::get('/kegiatan', function () {
-                return view('mahasiswa.kegiatan');
-            })->name('mahasiswa.kegiatan');
+            // Route::get('/kegiatan', function () {
+            //     return view('mahasiswa.kegiatan');
+            // })->name('mahasiswa.kegiatan');
+
+            //
+             Route::get('kegiatan/export/form', [MahasiswaKegiatanController::class, 'showExportForm'])
+                ->name('mahasiswa.kegiatan.export.form');
+            Route::post('kegiatan/export/pdf', [MahasiswaKegiatanController::class, 'exportPdf'])
+                ->name('mahasiswa.kegiatan.export.pdf');
+
+            // Resource routes untuk kegiatan
+            Route::resource('kegiatan', MahasiswaKegiatanController::class)->names([
+                'index' => 'mahasiswa.kegiatan.index',
+                'create' => 'mahasiswa.kegiatan.create',
+                'store' => 'mahasiswa.kegiatan.store',
+                'show' => 'mahasiswa.kegiatan.show',
+                'edit' => 'mahasiswa.kegiatan.edit',
+                'update' => 'mahasiswa.kegiatan.update',
+                'destroy' => 'mahasiswa.kegiatan.destroy',
+            ]);
+
+
 
             Route::get('/riwayatabsensi', function () {
                 return view('mahasiswa.riwayatabsensi');
