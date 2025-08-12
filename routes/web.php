@@ -99,9 +99,12 @@ Route::middleware('auth.custom')->group(function () {
             // });
             
 
-            Route::get('/pengaturan', function () {
-                return view('admin.pengaturan');
-            })->name('admin.pengaturan');
+            // Route::get('/pengaturan', function () {
+            //     return view('admin.pengaturan');
+            // })->name('admin.pengaturan');
+            Route::get('/instansi', [InstansiController::class, 'index'])->name('admin.instansi.index');
+            Route::put('/instansi', [InstansiController::class, 'update'])->name('admin.instansi.update');
+            Route::delete('/instansi/remove-logo', [InstansiController::class, 'removeLogo'])->name('admin.instansi.remove-logo');
 
             Route::get('/administrator', function () {
                 return view('admin.administrator');

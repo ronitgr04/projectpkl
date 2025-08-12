@@ -37,8 +37,12 @@
             <span class="material-icons">admin_panel_settings</span> Administrator
         </a>
 
-        <a href="/admin/pengaturan"
+        {{-- <a href="/admin/pengaturan"
            class="flex items-center gap-2 p-2 rounded-md transition-colors {{ request()->is('admin/pengaturan*') ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:text-blue-600 hover:bg-gray-50' }}">
+            <span class="material-icons">settings</span> Pengaturan
+        </a> --}}
+         <a href="/admin/instansi"
+           class="flex items-center gap-2 p-2 rounded-md transition-colors {{ request()->is('admin/instansi*') ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:text-blue-600 hover:bg-gray-50' }}">
             <span class="material-icons">settings</span> Pengaturan
         </a>
 

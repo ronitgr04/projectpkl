@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-{{-- 60 --}} {{-- {{ route('mahasiswa.kegiatan.export.form') }} --}}
+{{-- 60 --}} 
 
 {{-- 136 --}} 
 
@@ -57,7 +57,7 @@
                         <p class="text-gray-600 mt-1">Kelola dan dokumentasikan kegiatan PKL Anda</p>
                     </div>
                     <div class="flex space-x-3">
-                        <a href="#"
+                        <a href="{{ route('mahasiswa.kegiatan.export.form') }}"
                             class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                             <span class="material-icons text-sm">picture_as_pdf</span>
                             <span>Cetak PDF</span>
