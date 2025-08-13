@@ -1,3 +1,5 @@
+
+
 @extends('layouts.app')
 
 @section('title', 'Profil Saya')
@@ -52,14 +54,14 @@
                             </tr>
                         </table>
 
-                        <div class="mt-3">
-                            <button class="btn btn-primary me-2">
-                                <i class="bi bi-pencil me-1"></i>Edit Profil
-                            </button>
-                            <button class="btn btn-warning">
-                                <i class="bi bi-key me-1"></i>Ganti Password
-                            </button>
-                        </div>
+                                    <div class="mt-3">
+                                        <button class="btn btn-primary me-2">
+                                            <i class="bi bi-pencil me-1"></i>Edit Profil
+                                        </button>
+                                        <button class="btn btn-warning">
+                                            <i class="bi bi-key me-1"></i>Ganti Password
+                                        </button>
+                                    </div>
                     </div>
                 </div>
             </div>
