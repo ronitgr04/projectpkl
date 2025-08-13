@@ -23,10 +23,10 @@ class Instansi extends Model
         'website',
         'jam_mulai_absensi',
         'jam_akhir_absensi',
-        // 'latitude',
-        // 'longitude',
-        // 'radius_absensi',
-        // 'enable_location_check',
+        'latitude',
+        'longitude',
+        'radius_absensi',
+        'enable_location_check',
     ];
 
     protected $casts = [
@@ -151,7 +151,30 @@ class Instansi extends Model
      */
     public function isUserWithinRadius($userLat, $userLon)
     {
-        //1///
+         //1//
+        if (!$this->isLocationCheckEnabled()) {
+            return [
+                'is_within_radius' => true,
+                'distance' => 0,
+                'message' => 'Pengecekan lokasi tidak aktif'
+            ];
+        }
+
+        if (!LocationService::isValidCoordinate($userLat, $userLon)) {
+            return [
+                'is_within_radius' => false,
+                'distance' => null,
+                'message' => 'Koordinat tidak valid'
+            ];
+        }
+
+        return LocationService::isWithinRadius(
+            $userLat,
+            $userLon,
+            $this->latitude,
+            $this->longitude,
+            $this->radius_absensi
+        );
        
     }
 
@@ -168,7 +191,11 @@ class Instansi extends Model
      */
     public function getGoogleMapsUrlAttribute()
     {
-        //2///
+        //2//
+        if ($this->hasLocation()) {
+            return LocationService::getGoogleMapsUrl($this->latitude, $this->longitude);
+        }
+        return null;
         
     }
 
@@ -177,7 +204,16 @@ class Instansi extends Model
      */
     public function getLocationAddressAttribute()
     {
-        //3///
+                //3///
+        if ($this->alamat) {
+            return $this->alamat;
+        }
+
+        if ($this->hasLocation()) {
+            return LocationService::getAddressFromCoordinates($this->latitude, $this->longitude);
+        }
+
+        return 'Alamat belum diset';
        
     }
 
@@ -186,6 +222,25 @@ class Instansi extends Model
      */
     public function validateLocationSettings()
     {
-       
+         {
+        //4///
+        $errors = [];
+
+        if ($this->enable_location_check) {
+            if (!$this->hasLocation()) {
+                $errors[] = 'Koordinat kantor belum diset';
+            }
+
+            if ($this->radius_absensi <= 0) {
+                $errors[] = 'Radius absensi harus lebih dari 0';
+            }
+
+            if ($this->radius_absensi > 10000) {
+                $errors[] = 'Radius absensi maksimal 10 km';
+            }
+        }
+
+        return $errors;
+    }
     }
 }
