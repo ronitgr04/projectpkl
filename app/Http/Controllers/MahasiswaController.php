@@ -162,7 +162,11 @@ class MahasiswaController extends Controller
             Storage::delete('public/mahasiswa_photos/' . $mahasiswa->foto);
         }
 
+        if($mahasiswa->user()){
+            $mahasiswa->user()->delete();
+        }
         $mahasiswa->delete();
+        
 
         // Fixed: redirect to correct route
         return redirect()->route('admin.mahasiswa.index')

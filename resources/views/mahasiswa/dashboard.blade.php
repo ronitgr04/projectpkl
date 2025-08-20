@@ -416,6 +416,7 @@
                 <strong>Reminder:</strong> Jangan lupa isi absen anda pada jam <strong>09.00 WIB</strong> hari ini.
             </div>
             <br><br>
+            
             <!-- Dashboard Cards -->
             {{-- <div class="cards">
                 <div class="card card-1">

@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MahasiswaAbsensiController;
 use App\Http\Controllers\MahasiswaKegiatanController;
 use App\Http\Controllers\ProfilMahasiswaController; // TAMBAHAN BARU
@@ -47,6 +48,8 @@ Route::middleware('auth.custom')->group(function () {
 
         // Admin Dashboard
             Route::get('/admin/dashboard', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
+            // routes/web.php
+            
 
             // Mahasiswa routes dengan prefix admin
             Route::prefix('admin')->group(function () {
@@ -118,16 +121,19 @@ Route::middleware('auth.custom')->group(function () {
     Route::middleware('auth.custom:User')->group(function () {
         // Mahasiswa Dashboard
         Route::get('/mahasiswa/dashboard', [AuthController::class, 'mahasiswaDashboard'])->name('mahasiswa.dashboard');
-
+        
         // Routes khusus mahasiswa
         Route::prefix('mahasiswa')->group(function () {
             Route::get('/', function () {
                 return view('mahasiswa.index');
             })->name('mahasiswa.index');
 
-            Route::get('/absensi', function () {
-                return view('mahasiswa.absensi');
-            })->name('mahasiswa.absensi');
+            // Route::get('/absensi', function () {
+            //     return view('mahasiswa.absensi');
+            // })->name('mahasiswa.absensi');
+            Route::get('/absensi', [MahasiswaAbsensiController::class, 'index'])->name('mahasiswa.absensi');
+            Route::post('/absensi', [MahasiswaAbsensiController::class, 'store'])->name('mahasiswa.absensi.store');
+            Route::get('/absensi/check-today', [MahasiswaAbsensiController::class, 'checkTodayAttendance'])->name('mahasiswa.absensi.check-today');
 
             // Route::get('/kegiatan', function () {
             //     return view('mahasiswa.kegiatan');

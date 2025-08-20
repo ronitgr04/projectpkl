@@ -606,23 +606,81 @@
                 }
             }
 
+            // function resetForm() {
+            //     if (confirm('Apakah Anda yakin ingin mereset form? Semua perubahan yang belum disimpan akan hilang.')) {
+            //         document.querySelector('form').reset();
+            //         const preview = document.getElementById('logo-preview');
+            //         const placeholder = document.getElementById('logo-placeholder');
+
+            //         // Reset logo preview
+            //         if (!instansi || !instansi.logo) {
+            //             preview.classList.add('hidden');
+            //             if (placeholder) {
+            //                 placeholder.classList.remove('hidden');
+            //             }
+            //         }
+
+            //         // Reset time preview
+            //         updateTimePreview();
+            //     }
+            // }
             function resetForm() {
-                if (confirm('Apakah Anda yakin ingin mereset form? Semua perubahan yang belum disimpan akan hilang.')) {
-                    document.querySelector('form').reset();
-                    const preview = document.getElementById('logo-preview');
-                    const placeholder = document.getElementById('logo-placeholder');
+                const textInputs = document.querySelectorAll('input[type="text"], input[type="url"], input[type="number"], input[type="time"], textarea');
+                textInputs.forEach(input => {
+                    input.value = '';
+                });
 
-                    // Reset logo preview
-                    if (!instansi || !instansi.logo) {
-                        preview.classList.add('hidden');
-                        if (placeholder) {
-                            placeholder.classList.remove('hidden');
-                        }
-                    }
 
-                    // Reset time preview
-                    updateTimePreview();
+
+
+
+                const logoInput = document.getElementById('logo');
+                if (logoInput) {
+                    const newInput = logoInput.cloneNode(true);
+                    newInput.value = '';
+                    logoInput.parentNode.replaceChild(newInput, logoInput);
+                    newInput.addEventListener('change', function(e) {
+                        previewLogo(e.target)
+                    });
                 }
+
+
+            const preview = document.getElementById('location-preview');
+            if (preview) {
+                preview.classList.add('hidden');
+                document.getElementById('preview-coordinates').textContent = '';
+                document.getElementById('preview-radius').textContent = '';
+            }
+
+            const logoPreview = document.getElementById('logo-preview');
+            const logoPlaceholder = document.getElementById('logo-placeholder');
+            if (logoPreview && logoPlaceholder) {
+                logoPreview.classList.add('hidden');
+                logoPreview.src = '';
+                logoPlaceholder.classList.remove('hidden');
+            }
+
+          
+            const enableLocation = document.getElementById('enable_location_check');
+            if (enableLocation) {
+                enableLocation.checked = false;
+                const locationFields = document.querySelectorAll('#latitude, #longitude, #radius_absensi');
+                locationFields.forEach(field => {
+                    field.disabled = true;
+                    field.closest('.mb-4, .mb-6').classList.add('opacity-50');
+                    field.value = '';
+                });
+            }
+
+            // Reset preview waktu absensi
+            document.getElementById('preview-start').textContent = '07:00';
+            document.getElementById('preview-end').textContent = '17:00';
+            document.getElementById('preview-duration').textContent = '10 jam';
+
+
+            form.scrollIntoView({
+                behavior: 'smooth'
+            });
             }
 
             // Function to update time preview
