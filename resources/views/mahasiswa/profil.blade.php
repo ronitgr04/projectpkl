@@ -42,11 +42,7 @@
 
         <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <!-- //tombol simpan -->
-             
-
-             {{-- input-input form di sini --}}
-            <button type="submit">Simpan</button>
+          
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

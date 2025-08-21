@@ -2,11 +2,11 @@
 
 // use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\AuthController;
-// use App\Http\Controllers\MahasiswaController;
+ use App\Http\Controllers\MahasiswaController;
 // use App\Http\Controllers\KegiatanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MahasiswaController;
+//use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\DashboardController;
@@ -102,16 +102,14 @@ Route::middleware('auth.custom')->group(function () {
             // });
             
 
-            // Route::get('/pengaturan', function () {
-            //     return view('admin.pengaturan');
-            // })->name('admin.pengaturan');
-            Route::get('/instansi', [InstansiController::class, 'index'])->name('admin.instansi.index');
-            Route::put('/instansi', [InstansiController::class, 'update'])->name('admin.instansi.update');
-            Route::delete('/instansi/remove-logo', [InstansiController::class, 'removeLogo'])->name('admin.instansi.remove-logo');
+            Route::get('/pengaturan', function () {
+                return view('admin.pengaturan');
+            })->name('admin.pengaturan');
 
             Route::get('/administrator', function () {
                 return view('admin.administrator');
             })->name('admin.administrator');
+            
         });
     });
 
@@ -162,15 +160,60 @@ Route::middleware('auth.custom')->group(function () {
                 return view('mahasiswa.riwayatabsensi');
             })->name('mahasiswa.riwayatabsensi');
 
-            // Profil
-            Route::get('/profil', function () {
-                return view('mahasiswa.profil');
+
+//    Route::middleware(['auth'])->group(function () {
+//     Route::get('/profil', [MahasiswaController::class, 'profilSaya'])->name('profil.saya');
+//     Route::post('/profil/update', [MahasiswaController::class, 'updateProfilSaya'])->name('profil.update');
+
+    //terbaru
+    Route::get('/profil', [ProfilMahasiswaController::class, 'index'])->name('mahasiswa.profil.index');
+            Route::get('/profil/edit', [ProfilMahasiswaController::class, 'edit'])->name('mahasiswa.profil.edit');
+            Route::put('/profil', [ProfilMahasiswaController::class, 'update'])->name('mahasiswa.profil.update');
+
+            // API endpoints untuk AJAX (opsional)
+            Route::get('/profil/data', [ProfilMahasiswaController::class, 'getProfilData'])->name('mahasiswa.profil.data');
+            Route::get('/profil/completion', [ProfilMahasiswaController::class, 'checkCompletion'])->name('mahasiswa.profil.completion');
+
+            // Route lama yang akan di-redirect ke route baru
+            Route::get('/profil-old', function () {
+                return redirect()->route('mahasiswa.profil.index');
             })->name('mahasiswa.profil');
-            Route::middleware(['auth'])->group(function () {
-            Route::get('/profil', [MahasiswaController::class, 'profilSaya'])->name('profil.mahasiswa');
-            });
-            });
-            });
+        });
+    });
+
+
+   
+});
+
+
+
+
+            // Profil
+            // Route::get('/profil', function () {
+            //     return view('mahasiswa.profil');
+            // })->name('mahasiswa.profil');
+            // Route::middleware(['auth'])->group(function () {
+            // Route::get('/profil', [MahasiswaController::class, 'profilSaya'])->name('profil.mahasiswa');
+            // });
+            // });
+            // });
+            
+            // ROUTES PROFIL MAHASISWA - BARU
+            // Menggunakan pola yang sama dengan routes lainnya
+        //     Route::get('/profil', [ProfilMahasiswaController::class, 'index'])->name('mahasiswa.profil.index');
+        //     Route::get('/profil/edit', [ProfilMahasiswaController::class, 'edit'])->name('mahasiswa.profil.edit');
+        //     Route::put('/profil', [ProfilMahasiswaController::class, 'update'])->name('mahasiswa.profil.update');
+
+        //     // API endpoints untuk AJAX (opsional)
+        //     Route::get('/profil/data', [ProfilMahasiswaController::class, 'getProfilData'])->name('mahasiswa.profil.data');
+        //     Route::get('/profil/completion', [ProfilMahasiswaController::class, 'checkCompletion'])->name('mahasiswa.profil.completion');
+
+        //     // Route lama yang akan di-redirect ke route baru
+        //     Route::get('/profil-old', function () {
+        //         return redirect()->route('mahasiswa.profil.index');
+        //     })->name('mahasiswa.profil');
+        // });
+
 
     // Routes accessible by both Admin and User
     Route::middleware('auth.custom:Admin,User')->group(function () {
@@ -179,4 +222,4 @@ Route::middleware('auth.custom')->group(function () {
         })->name('profile');
         // Add more shared routes here
     });
-});
+

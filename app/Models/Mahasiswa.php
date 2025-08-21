@@ -45,6 +45,7 @@ class Mahasiswa extends Model
     {
         return !is_null($this->user_id) && $this->user()->exists();
     }
+    
 
     // Accessor untuk format tanggal Indonesia
     public function getMulaiMagangFormattedAttribute()

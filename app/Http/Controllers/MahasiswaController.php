@@ -265,5 +265,7 @@ class MahasiswaController extends Controller
     {
         $mahasiswa = Mahasiswa::all();
         return response()->json($mahasiswa);
+
     }
+    
 }
