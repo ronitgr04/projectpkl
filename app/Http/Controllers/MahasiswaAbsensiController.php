@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\Mahasiswa;
 use App\Models\Instansi;
+use App\Models\Libur; // TAMBAHAN IMPORT
 use App\Services\LocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,12 @@ class MahasiswaAbsensiController extends Controller
         $today = Carbon::now('Asia/Jakarta')->startOfDay();
         $currentTime = Carbon::now('Asia/Jakarta');
 
+        // dd($today);
+
+        // TAMBAHAN: Check if today is a holiday
+        $todayHoliday = Libur::getLiburByTanggal($today);
+        $isHoliday = Libur::isLibur($today);
+
         // Check if already attended today - INI YANG DIPERBAIKI
         $todayAttendance = Absensi::where('mahasiswa_id', $mahasiswa->id)
             ->whereDate('tanggal', $today->toDateString()) // Pastikan format tanggal konsisten
@@ -43,6 +50,8 @@ class MahasiswaAbsensiController extends Controller
         Log::info('Checking today attendance:', [
             'mahasiswa_id' => $mahasiswa->id,
             'today_date' => $today->toDateString(),
+            'is_holiday' => $isHoliday,
+            'holiday_data' => $todayHoliday ? $todayHoliday->toArray() : null,
             'found_attendance' => $todayAttendance ? $todayAttendance->id : null,
             'attendance_data' => $todayAttendance ? [
                 'id' => $todayAttendance->id,
@@ -60,7 +69,9 @@ class MahasiswaAbsensiController extends Controller
             'todayAttendance',
             'instansi',
             'isWithinAttendanceHours',
-            'currentTime'
+            'currentTime',
+            'isHoliday', // TAMBAHAN
+            'todayHoliday' // TAMBAHAN
         ));
     }
 
@@ -84,6 +95,28 @@ class MahasiswaAbsensiController extends Controller
         Carbon::setLocale('id');
         $now = Carbon::now('Asia/Jakarta');
         $today = $now->copy()->startOfDay();
+        // dd($today);
+
+        // TAMBAHAN: Check if today is a holiday BEFORE any other validation
+        $isHoliday = Libur::isLibur($today);
+        $todayHoliday = Libur::getLiburByTanggal($today);
+
+
+
+        if ($isHoliday) {
+            // dd('sedang libur bro');
+            $holidayName = $todayHoliday ? $todayHoliday->nama_libur : 'Hari Libur';
+            $errorMessage = "Absensi tidak dapat dilakukan pada hari libur: {$holidayName}";
+
+            Log::warning('Attendance attempted on holiday:', [
+                'mahasiswa_id' => $mahasiswa->id,
+                'date' => $today->toDateString(),
+                'holiday_name' => $holidayName,
+                'holiday_type' => $todayHoliday ? $todayHoliday->jenis_libur : 'unknown'
+            ]);
+
+            return redirect()->back()->with('error', $errorMessage);
+        }
 
         // DOUBLE CHECK - Cek apakah sudah absen hari ini SEBELUM validasi lainnya
         $existingAttendance = Absensi::where('mahasiswa_id', $mahasiswa->id)
@@ -180,7 +213,8 @@ class MahasiswaAbsensiController extends Controller
                 $distance = $locationCheck['distance_formatted'] ?? LocationService::formatDistance($locationCheck['distance']);
                 $allowedRadius = LocationService::formatDistance($instansi->radius_absensi);
 
-                return redirect()->back()->with('error',
+                return redirect()->back()->with(
+                    'error',
                     "Anda berada di luar radius kantor. Jarak Anda: {$distance}, Radius yang diizinkan: {$allowedRadius}. Silakan datang ke kantor untuk melakukan absensi Hadir."
                 );
             }
@@ -202,8 +236,10 @@ class MahasiswaAbsensiController extends Controller
 
                 if ($instansi->hasLocation()) {
                     $distance = LocationService::calculateDistance(
-                        $userLat, $userLon,
-                        $instansi->latitude, $instansi->longitude
+                        $userLat,
+                        $userLon,
+                        $instansi->latitude,
+                        $instansi->longitude
                     );
                 }
 
@@ -219,7 +255,6 @@ class MahasiswaAbsensiController extends Controller
         // Refresh waktu untuk mendapatkan waktu terkini
         $now = Carbon::now('Asia/Jakarta');
 
-        // Data yang akan disimpan - PASTIKAN FORMAT TANGGAL KONSISTEN
         $absensiData = array_merge([
             'mahasiswa_id' => $mahasiswa->id,
             'status' => $request->status,
@@ -256,7 +291,6 @@ class MahasiswaAbsensiController extends Controller
             }
 
             return redirect()->route('mahasiswa.absensi')->with('success', $successMessage);
-
         } catch (\Exception $e) {
             Log::error('Error saving attendance:', [
                 'error' => $e->getMessage(),
@@ -312,11 +346,14 @@ class MahasiswaAbsensiController extends Controller
             ->where('status', 'Alpha')
             ->count();
 
+        $level = $user->level;
+
         // Get instansi untuk info lokasi
         $instansi = Instansi::getInstansi();
 
         return view('mahasiswa.riwayatabsensi', compact(
             'mahasiswa',
+            'level',
             'riwayatAbsensi',
             'totalHadir',
             'totalIzin',
@@ -343,6 +380,10 @@ class MahasiswaAbsensiController extends Controller
         $today = Carbon::now('Asia/Jakarta')->startOfDay();
         $currentTime = Carbon::now('Asia/Jakarta');
 
+        // TAMBAHAN: Check holiday status
+        $isHoliday = Libur::isLibur($today);
+        $todayHoliday = Libur::getLiburByTanggal($today);
+
         $todayAttendance = Absensi::where('mahasiswa_id', $mahasiswa->id)
             ->whereDate('tanggal', $today->toDateString())
             ->first();
@@ -356,6 +397,14 @@ class MahasiswaAbsensiController extends Controller
             'attendance_hours' => $instansi->getFormattedAttendanceHours(),
             'current_time' => $currentTime->format('H:i'),
             'location_check_enabled' => $instansi->isLocationCheckEnabled(),
+            'is_holiday' => $isHoliday, // TAMBAHAN
+            'holiday_data' => $todayHoliday ? [ // TAMBAHAN
+                'name' => $todayHoliday->nama_libur,
+                'type' => $todayHoliday->jenis_libur,
+                'description' => $todayHoliday->keterangan,
+                'start_date' => $todayHoliday->tanggal_mulai_formatted,
+                'end_date' => $todayHoliday->tanggal_selesai_formatted
+            ] : null,
             'office_location' => $instansi->hasLocation() ? [
                 'latitude' => $instansi->latitude,
                 'longitude' => $instansi->longitude,
@@ -402,15 +451,43 @@ class MahasiswaAbsensiController extends Controller
     }
 
     /**
+     * TAMBAHAN: Method untuk cek status hari libur via AJAX
+     */
+    public function checkHolidayStatus(Request $request)
+    {
+        $date = $request->get('date', now('Asia/Jakarta')->format('Y-m-d'));
+
+        $isHoliday = Libur::isLibur($date);
+        $holidayData = Libur::getLiburByTanggal($date);
+
+        return response()->json([
+            'is_holiday' => $isHoliday,
+            'holiday_data' => $holidayData ? [
+                'id' => $holidayData->id,
+                'name' => $holidayData->nama_libur,
+                'type' => $holidayData->jenis_libur,
+                'description' => $holidayData->keterangan,
+                'start_date' => $holidayData->tanggal_mulai_formatted,
+                'end_date' => $holidayData->tanggal_selesai_formatted,
+                'duration' => $holidayData->durasi_hari
+            ] : null
+        ]);
+    }
+
+    /**
      * Debug method untuk troubleshooting location
      */
     public function debugLocation(Request $request)
     {
         $user = Auth::user();
         $instansi = Instansi::getInstansi();
+        $today = Carbon::now('Asia/Jakarta')->startOfDay();
 
         $data = [
             'user_id' => $user->id_user,
+            'current_date' => $today->format('Y-m-d'),
+            'is_holiday' => Libur::isLibur($today), // TAMBAHAN
+            'holiday_data' => Libur::getLiburByTanggal($today), // TAMBAHAN
             'instansi' => [
                 'has_location' => $instansi->hasLocation(),
                 'latitude' => $instansi->latitude,
