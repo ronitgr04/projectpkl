@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Services\LocationService;
 use Illuminate\Support\Facades\Auth;
-
+//aldallalala
 class Absensi extends Model
 {
     use HasFactory;
