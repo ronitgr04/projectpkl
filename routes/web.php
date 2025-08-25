@@ -16,9 +16,6 @@ use App\Http\Controllers\ProfilMahasiswaController; // TAMBAHAN BARU
 use App\Http\Controllers\InstansiController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KegiatanMahasiswaController;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
 
 
 // Redirect root to login
@@ -159,14 +156,9 @@ Route::middleware('auth.custom')->group(function () {
 
 
 
-            // Route::get('/riwayatabsensi', function () {
-            //     return view('mahasiswa.riwayatabsensi');
-            // })->name('mahasiswa.riwayatabsensi');
-            // Routes Riwayat Absensi untuk Mahasiswa
-            Route::get('/riwayatabsensi', [MahasiswaAbsensiController::class, 'riwayat'])->name('mahasiswa.absensi.riwayat');
-
-
-            
+            Route::get('/riwayatabsensi', function () {
+                return view('mahasiswa.riwayatabsensi');
+            })->name('mahasiswa.riwayatabsensi');
 
 
 //    Route::middleware(['auth'])->group(function () {
